@@ -5,12 +5,11 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 import LoginStyle from './LoginStyle';
-import { login } from '../../services/Service';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import { login } from '../../services/Service'; // tu función ya guarda los tokens
 
 const loginSchema = Yup.object().shape({
-  ru: Yup.string().min(5, 'Registro Universitario Invalido!!').required('Campo Obligatorio!!'),
-  password: Yup.string().min(6, 'Complete su campo *').required('Campo Obligatorio'),
+  ru: Yup.string().min(5, 'Registro Universitario inválido').required('Campo obligatorio'),
+  password: Yup.string().min(5, 'Contraseña muy corta').required('Campo obligatorio'),
 });
 
 const LoginScreen = () => {
@@ -20,10 +19,10 @@ const LoginScreen = () => {
   const handleLogin = async (values) => {
     try {
       const response = await login(values.ru, values.password);
+
       if (response && response.token) {
-        await EncryptedStorage.setItem('authToken', response.token);
         Alert.alert('Bienvenido');
-        navigation.navigate('Tab');
+        navigation.replace('Tab'); // evita volver atrás al login
       } else {
         Alert.alert('Error', 'Credenciales incorrectas');
       }
@@ -54,7 +53,7 @@ const LoginScreen = () => {
                 onChangeText={handleChange('ru')}
                 onBlur={handleBlur('ru')}
                 value={values.ru}
-                keyboardType='numeric'
+                keyboardType="numeric"
                 errorMessage={touched.ru && errors.ru ? errors.ru : ''}
               />
 
@@ -70,14 +69,18 @@ const LoginScreen = () => {
                     />
                   </TouchableOpacity>
                 }
-                secureTextEntry={!showPassword} 
+                secureTextEntry={!showPassword}
                 onChangeText={handleChange('password')}
                 onBlur={handleBlur('password')}
                 value={values.password}
                 errorMessage={touched.password && errors.password ? errors.password : ''}
               />
 
-              <Button title="Iniciar Sesión" onPress={handleSubmit} buttonStyle={LoginStyle.button} />
+              <Button
+                title="Iniciar Sesión"
+                onPress={handleSubmit}
+                buttonStyle={LoginStyle.button}
+              />
             </Card>
           )}
         </Formik>

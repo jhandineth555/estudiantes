@@ -1,6 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, useWindowDimensions, Dimensions, Image, Animated } from 'react-native';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import {
+  View,
+  Text,
+  Animated,
+  RefreshControl,
+  StyleSheet,
+} from 'react-native';
 import { Avatar } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -11,44 +16,32 @@ import ProfileStyle from './ProfileStyle';
 import NavigationStyles from '../../navigation/NavigationStyles';
 import useFetch from '../../hooks/useFetch';
 
-
-const renderScene = SceneMap({
-  info: InformacionPerfil,
-  infoacademica: InfoAcademica,
-  lugar: LugarPerfil,
-});
 const ProfileScreen = () => {
-  const layout = useWindowDimensions();
-  const [index, setIndex] = useState(0);
+  const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
   const [imageUri, setImageUri] = useState(null);
   const scrollY = useRef(new Animated.Value(0)).current;
   const lastScrollY = useRef(0);
-  const navigation = useNavigation();
-  const { perfil } = useFetch();
-  const { infoacademica } = useFetch();
-  const [routes] = useState([
-    { key: 'info', title: 'INFORMACION ESTUDIANTE' },
-    { key: 'infoacademica', title: 'INFORMACION ACADEMICA' },
-    { key: 'lugar', title: 'INFORMACION LOCALIDAD' },
-  ]);
+
+  const { perfil, refreshPerfil } = useFetch();
 
   useEffect(() => {
     const fetchImage = async () => {
       const uri = await AsyncStorage.getItem('profileImage');
-      setImageUri(uri);
+      if (uri) setImageUri(uri);
     };
     fetchImage();
   }, []);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       navigation.getParent()?.setOptions({ tabBarStyle: NavigationStyles.tabBarStyle });
-      return () => {}; 
+      return () => {};
     }, [navigation])
   );
 
   useEffect(() => {
-    scrollY.addListener(({ value }) => {
+    const listener = scrollY.addListener(({ value }) => {
       if (value > lastScrollY.current) {
         navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
       } else {
@@ -56,56 +49,111 @@ const ProfileScreen = () => {
       }
       lastScrollY.current = value;
     });
+    return () => scrollY.removeListener(listener);
+  }, [navigation, scrollY]);
 
-    return () => scrollY.removeAllListeners();
-  }, [navigation]);
-  const ruE = perfil ? perfil.ru_e : '';
-  const ca = infoacademica ? infoacademica.carrera : '';
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    Promise.all([refreshPerfil?.()])
+      .finally(() => setRefreshing(false));
+  }, [refreshPerfil]);
+
+  const ruE = perfil?.id_alumno || '';
+  const ca = perfil?.programa || '';
+  const sexo = perfil?.id_sexo?.toLowerCase();
+
+  // Selecciona la imagen del avatar según sexo o imagen guardada
+  const avatarSource = imageUri
+    ? { uri: `file://${imageUri}` }
+    : sexo === 'f'
+      ? require('../../asset/img/avatar_mujer.png')  // Avatar femenino
+      : require('../../asset/img/avatar.png');       // Avatar masculino por defecto
+
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
-      <Animated.ScrollView 
-        style={{ flex: 1 }}
+    <View style={styles.container}>
+      <Animated.ScrollView
+        style={styles.scrollView}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
         )}
         scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
-        <View style={{ alignItems: 'center', marginVertical: 10 }}>
+        {/* Encabezado */}
+        <View style={styles.header}>
           <Text style={ProfileStyle.centeredText}>CARRERA: {ca}</Text>
-          {imageUri ? (
-            <Image source={{ uri: `file://${imageUri}` }} style={ProfileStyle.avatar} />
-          ) : (
-            <Avatar
-              size="xlarge"
-              rounded
-              source={require('../../asset/img/avatar.png')}
-              containerStyle={ProfileStyle.avatar}
-            />
-          )}
-          <Text style={{ marginTop: 10, color: 'black', textAlign: 'center' }}>R.U.: {ruE}</Text>
-          <Text style={ProfileStyle.centeredText}>INFORMACION{"\n"}</Text>
+
+          <Avatar
+            size="xlarge"
+            rounded
+            source={avatarSource}
+            containerStyle={ProfileStyle.avatar}
+          />
+
+          <Text style={styles.ruText}>R.U.: {ruE}</Text>
+          <Text style={styles.title}>INFORMACIÓN</Text>
         </View>
 
-        <View style={ProfileStyle.container2}>
-          <TouchableOpacity
-            style={ProfileStyle.button}
-            onPress={() => navigation.navigate('Update')}
-          >
-            <Text style={{ color: 'white' }}>REGISTRAR TELEFONO Y EMAIL</Text>
-          </TouchableOpacity>
+        {/* Secciones */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>INFORMACIÓN DEL ESTUDIANTE</Text>
+          <InformacionPerfil />
         </View>
-        
-        <View style={{ height: Dimensions.get('window').height }}>
-          <TabView
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            onIndexChange={setIndex}
-            initialLayout={{ width: layout.width }}
-          />
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>INFORMACIÓN ACADÉMICA</Text>
+          <InfoAcademica />
         </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>INFORMACIÓN DE LOCALIDAD</Text>
+          <LugarPerfil />
+        </View>
+
+        <View style={{ height: 40 }} />
       </Animated.ScrollView>
     </View>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  ruText: {
+    marginTop: 10,
+    color: 'black',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#222',
+    marginTop: 5,
+  },
+  section: {
+    paddingHorizontal: 15,
+    marginTop: 20,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#444',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+});
+
 export default ProfileScreen;

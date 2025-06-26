@@ -1,99 +1,76 @@
-import React, { useRef } from 'react';
-import { View, StyleSheet, Dimensions, Animated, Pressable } from 'react-native';
-import { Card, Icon, Text } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const ProgramacionScreen = ({ navigation }) => {
-  const renderAnimatedButton = (name, title, screen) => {
-    const scaleAnim = useRef(new Animated.Value(1)).current;
-
-    const handlePressIn = () => {
-      Animated.spring(scaleAnim, {
-        toValue: 0.95,
-        useNativeDriver: true,
-      }).start();
-    };
-
-    const handlePressOut = () => {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-      }).start();
-    };
-
-    return (
-      <Animated.View style={[styles.buttonWrapper, { transform: [{ scale: scaleAnim }] }]}>
-        <Pressable
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          onPress={() => navigation.navigate(screen)} // ✅ Navega inmediatamente
-          style={styles.animatedButton}
-        >
-          <Icon name={name} type="material-community" color="#fff" size={30} />
-          <Text style={styles.buttonTitle}>{title}</Text>
-        </Pressable>
-      </Animated.View>
-    );
-  };
+const ProgramacioScreen = () => {
+  const navigation = useNavigation();
+  const data = [
+    { iconName: 'archive', label: 'PROGRAMACION DE MATERIAS', target: 'TipoProgramacion' },
+    { iconName: 'article', label: 'KARDEX ACADEMICO', target: 'kardex' },
+  ];
 
   return (
-    <Card containerStyle={styles.card}>
-      <Card.Title style={styles.title}></Card.Title>
-      <Card.Divider />
-      <View style={styles.buttonContainer}>
-        {renderAnimatedButton('timetable', 'PROGRAMACIÓN NORMAL', 'ProgramacionNormal')}
-        {renderAnimatedButton('timetable', 'CURSOS DE VERANO', 'Verano')}
-        {renderAnimatedButton('timetable', 'MESA DE EXAMEN', 'MesaExamen')}
-        {renderAnimatedButton('table-cog', 'PROGRAMACIÓN LABORATORIO', 'Laboratorio')}
-        {renderAnimatedButton('table-search', 'VER NOTAS', 'VerNotas')}
-        {renderAnimatedButton('table-headers-eye', 'VER MI PROGRAMCIÓN', 'VerProgramacion')}
-      </View>
-    </Card>
+    <View style={styles.container}>
+      <Text style={styles.title}>OPCIONES ACADEMICAS</Text>
+      {data.map((item, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.card}
+          onPress={() => navigation.navigate(item.target)}
+          activeOpacity={0.8}
+        >
+          <View style={styles.iconContainer}>
+            <Icon name={item.iconName} size={30} color="#fff" />
+          </View>
+          <Text style={styles.label}>{item.label}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
   );
 };
 
-const screenWidth = Dimensions.get('window').width;
-const buttonSize = (screenWidth - 90) / 2;
-
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 50,
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F7FA',
+    padding: 20,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  buttonWrapper: {
-    width: buttonSize,
+    color: '#333',
     marginBottom: 20,
+    textAlign: 'center',
   },
-  animatedButton: {
-    backgroundColor: '#2089dc',
-    borderRadius: 20,
-    aspectRatio: 1,
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+  },
+  iconContainer: {
+    backgroundColor: '#00897B',
+    borderRadius: 25,
+    width: 50,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 12,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    marginRight: 15,
   },
-  buttonTitle: {
-    color: '#fff',
-    fontSize: 13,
-    textAlign: 'center',
-    marginTop: 8,
+  label: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
   },
 });
 
-export default ProgramacionScreen;
+export default ProgramacioScreen;

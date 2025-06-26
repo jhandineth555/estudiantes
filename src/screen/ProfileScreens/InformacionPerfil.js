@@ -11,33 +11,39 @@ const InformacionPerfil = () => {
       </View>
     );
   }
-
+  const fechaNacimiento = perfil.fec_nacimiento
+    ? new Date(perfil.fec_nacimiento).toLocaleDateString('es-BO', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+      })
+    : '';
   return (
     <View style={styles.container}>
       <View style={styles.table}>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Nombre:</Text>
-          <Text style={styles.tableCell}>{perfil.nombre}</Text>
+          <Text style={styles.tableCell}>NOMBRE:</Text>
+          <Text style={styles.tableCell}>{perfil.nombres}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Apellido Paterno:</Text>
-          <Text style={styles.tableCell}>{perfil.ap_paterno}</Text>
+          <Text style={styles.tableCell}>APELLIDO PATERNO:</Text>
+          <Text style={styles.tableCell}>{perfil.paterno}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Apellido Materno:</Text>
-          <Text style={styles.tableCell}>{perfil.ap_materno}</Text>
+          <Text style={styles.tableCell}>APELLIDO MATERNO:</Text>
+          <Text style={styles.tableCell}>{perfil.materno}</Text>
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>C.I.:</Text>
-          <Text style={styles.tableCell}>{perfil.ci}</Text>
+          <Text style={styles.tableCell}>{perfil.nro_dip}</Text>
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>R.U.:</Text>
-          <Text style={styles.tableCell}>{perfil.ru_e}</Text>
+          <Text style={styles.tableCell}>{perfil.id_alumno}</Text>
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Fecha de Nacimiento:</Text>
-          <Text style={styles.tableCell}>{perfil.fech_nacimiento}</Text>
+          <Text style={styles.tableCell}>{fechaNacimiento}</Text>
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Dirección:</Text>
@@ -49,7 +55,7 @@ const InformacionPerfil = () => {
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Teléfono Personal:</Text>
-          <Text style={styles.tableCell}>{perfil.telefono}</Text>
+          <Text style={styles.tableCell}>{perfil.tel_per}</Text>
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Email:</Text>
@@ -57,11 +63,11 @@ const InformacionPerfil = () => {
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Tipo Sanguíneo:</Text>
-          <Text style={styles.tableCell}>{perfil.tip_sangre}</Text>
+          <Text style={styles.tableCell}>{perfil.des_sanguineo}</Text>
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Tel. Whatsapp:</Text>
-          <Text style={styles.tableCell}>{perfil.num_wasap}</Text>
+          <Text style={styles.tableCell}>{perfil.tel_whatsapp}</Text>
         </View>
       </View>
     </View>

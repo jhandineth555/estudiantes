@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Dimensions } from 'react-native';
-import TablasNotasVertical from '../ProgramacionScreens/TablaNotas/TablaNotasVertical';
-import TablasNotasHorizontal from '../ProgramacionScreens/TablaNotas/TablasNotasHorizontal';
+import TablasNotasHorizontal from './TablasNotasHorizontal';
+import TablasNotasVertical from './TablaNotasVertical';
 
-
-const MatriculaScreen = () => {
+const TablasNotas = () => {
   const [isPortrait, setIsPortrait] = useState(isDevicePortrait());
 
   function isDevicePortrait() {
@@ -23,4 +22,4 @@ const MatriculaScreen = () => {
   return isPortrait ? <TablasNotasVertical /> : <TablasNotasHorizontal />;
 };
 
-export default MatriculaScreen;
+export default TablasNotas;

@@ -3,6 +3,8 @@ import React from "react";
 import HomeScreen from "../screen/HomeScreens/HomeScreen";
 import ProfileScreen from "../screen/ProfileScreens/ProfileScreen";
 import CustomDrawerContent from "./CustomDrawerContent";
+import CuScreen from "../screen/CuScreens/CuScreen";
+import UpdateData from "../screen/ProfileScreens/UpdateData";
 
 
 const Drawer = createDrawerNavigator();
@@ -13,7 +15,8 @@ const CustomDrawer = () => {
             <Drawer.Screen
                 name="Home"
                 component={HomeScreen}
-                options={{ title: 'Principal', 
+                options={{ 
+                title: 'PRINCIPAL',
                 headerStyle: {
                     backgroundColor: '#rgb(9, 65, 85)', 
                     height: 60,},
@@ -24,14 +27,38 @@ const CustomDrawer = () => {
             <Drawer.Screen
                 name="Profile"
                 component={ProfileScreen}
-                options={{ title: 'Mi Perfil' 
-                ,headerStyle: {
+                options={{
+                    title: 'MI PERFIL', 
+                    headerStyle: {
+                    backgroundColor: '#rgb(9, 65, 85)', 
+                    height: 60,},
+                    headerTitleAlign: 'center',
+                    headerTintColor: '#fff',
+                }}    
+            />
+            <Drawer.Screen
+                name='Update'
+                component={UpdateData}
+                options={{ headerShown: true, 
+                    title: 'Actualizar Datos' ,
+                    headerStyle: {
+                        backgroundColor: '#rgb(9, 65, 85)',  
+                        height: 60,},
+                        headerTitleAlign: 'center',
+                        headerTintColor: '#fff',
+                }}    
+            />
+            <Drawer.Screen
+                name="Cu"
+                component={CuScreen}
+                options={{ 
+                    title: 'CARNET UNIVERSITARIO',
+                    headerStyle: {
                     backgroundColor: '#rgb(9, 65, 85)', 
                     height: 60,},
                     headerTitleAlign: 'center',
                     headerTintColor: '#fff',
                 }}
-                
             />
         </Drawer.Navigator>
     )

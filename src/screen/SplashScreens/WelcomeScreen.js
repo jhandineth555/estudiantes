@@ -6,7 +6,6 @@ const WelcomeScreen = ({ navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current; 
 
   useEffect(() => {
-    
     Animated.timing(fadeAnim, {
       toValue: 1, 
       duration: 1000, 

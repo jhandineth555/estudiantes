@@ -4,12 +4,12 @@ import useFetch from '../../hooks/useFetch';
 
 
 const LugarPerfil = () => {
-  const { lugar } = useFetch();
+  const { perfil } = useFetch();
   
-  if (!lugar) {
+  if (!perfil) {
           return (
               <View style={styles.container}>
-                  <Text style={styles.errorText}>No se pudo cargar la información del perfil.</Text>
+                  <Text style={styles.errorText}>No se pudo cargar la información Academica.</Text>
               </View>
           );
       }
@@ -18,19 +18,19 @@ const LugarPerfil = () => {
       <View style={styles.table}>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Pais: </Text>
-          <Text style={styles.tableCell}>{lugar.pais}</Text>
+          <Text style={styles.tableCell}>{perfil.pais}</Text>
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Departamento:</Text>
-          <Text style={styles.tableCell}>{lugar.departamento}</Text>
+          <Text style={styles.tableCell}>{perfil.departamento}</Text>
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Provincia:</Text>
-          <Text style={styles.tableCell}>{lugar.provincia}</Text>
+          <Text style={styles.tableCell}>{perfil.provincia}</Text>
         </View>
         <View style={styles.tableRow}>
           <Text style={styles.tableCell}>Localidad:</Text>
-          <Text style={styles.tableCell}>{lugar.localidad}</Text>
+          <Text style={styles.tableCell}>{perfil.localidad}</Text>
         </View>
       </View>
     </View>

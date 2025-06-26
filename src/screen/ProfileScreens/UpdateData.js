@@ -1,68 +1,59 @@
-import React, { useState } from 'react';
-import { View, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Alert, ScrollView } from 'react-native';
 import { Card, Input, Button } from 'react-native-elements';
 import ProfileStyle from './ProfileStyle';
 import useFetch from '../../hooks/useFetch';
+import { update_data } from '../../services/Service';
+import { useNavigation } from '@react-navigation/native';
 
 export default function UpdateData() {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const { perfil } = useFetch();
-
-  
-  const wasap = perfil ? String(perfil.num_wasap) : '';
-  const correo = perfil ? perfil.email : '';
+  const navigation = useNavigation();
+  useEffect(() => {
+    if (perfil) {
+      setWhatsapp(perfil.tel_whatsapp ? String(perfil.tel_whatsapp) : '');
+      setEmail(perfil.email || '');
+    }
+  }, [perfil]);
 
   const updateUser = async () => {
     try {
-      const response = await fetch(`url de backend`, {
-        method: 'PUT', // o 'PATCH'
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          whatsapp,
-          email,
-        }),
+      const response = await update_data({
+        num_wasap: whatsapp,
+        email,
       });
-
-      if (response.ok) {
-        const jsonResponse = await response.json();
-        Alert.alert('Éxito', 'Actualizado con éxito');
-        console.log(jsonResponse);
-      } else {
-        Alert.alert('Error', 'No se pudo actualizar');
-      }
+      Alert.alert(' ', 'Datos actualizados correctamente');
+      console.log(response);
+      navigation.navigate('Home');
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Hubo un problema al actualizar');
+      Alert.alert('Error', error.message || 'No se pudo actualizar');
     }
   };
 
   return (
-    <View style={ProfileStyle.background}>
+    <ScrollView contentContainerStyle={ProfileStyle.background}>
       <Card containerStyle={ProfileStyle.card}>
+        <Card.Title>Actualizar Datos</Card.Title>
         <Card.Divider />
         <Input
           label="NÚMERO DE WHATSAPP"
           leftIcon={{ type: 'font-awesome', name: 'whatsapp' }}
           value={whatsapp}
-          placeholder={wasap}
           onChangeText={setWhatsapp}
           keyboardType="numeric"
-          containerStyle={{ marginBottom: 10 }}
         />
         <Input
           label="EMAIL"
           value={email}
-          placeholder={correo}
           leftIcon={{ type: 'font-awesome', name: 'envelope' }}
           onChangeText={setEmail}
           keyboardType="email-address"
-          containerStyle={{ marginBottom: 10 }}
+          autoCapitalize="none"
         />
         <Button title="ACTUALIZAR" onPress={updateUser} />
       </Card>
-    </View>
+    </ScrollView>
   );
 }

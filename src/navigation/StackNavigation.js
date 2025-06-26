@@ -3,13 +3,17 @@ import WelcomeScreen from '../screen/SplashScreens/WelcomeScreen';
 import LoginScreen from '../screen/LoginScreens/LoginScreen';
 import SaveAuth from '../screen/LoginScreens/SaveAuth';
 import BottonTab from './BottonTab';
-import UpdateData from '../screen/ProfileScreens/UpdateData';
-import ProgramacionNormalScreen from '../screen/ProgramacionScreens/ProgramacionNormalScreen';
 import CursosVeranoScreen from '../screen/ProgramacionScreens/CursosVeranoScreen';
 import MesaExamenScreen from '../screen/ProgramacionScreens/MesaExamenScreen';
 import ProgramacionLaboratorioScreen from '../screen/ProgramacionScreens/ProgramacionLaboratorioScreen';
 import VerNotasScreen from '../screen/ProgramacionScreens/VerNotasScreen';
 import VerProgramacionScreen from '../screen/ProgramacionScreens/VerProgramacioScreen';
+import TipoProgramacionScreen from '../screen/ProgramacionScreens/TipoProgramacionScreen';
+import KardexScreen from '../screen/KardexScreen/KardexScreen';
+import MisNotasPeriodo from '../screen/ProgramacionScreens/MisNotasPeriodo';
+import TablasNotas from '../screen/ProgramacionScreens/TablaNotas/TablaNotas';
+import Mostrar_KardexScreen from '../screen/KardexScreen/Mostrar_KardexScreen';
+import MostrarKardexPensumScreen from '../screen/KardexScreen/MostrarKardexPensumScreen';
 
 const Stack = createStackNavigator();
 
@@ -34,22 +38,15 @@ const StackNavigation = () => {
                 component={BottonTab}
             />
             <Stack.Screen
-                name='Update'
-                component={UpdateData}
-                options={{ headerShown: true, 
-                    title: 'Actualizar Datos' ,
-                    headerStyle: {
+                name='TipoProgramacion'
+                component={TipoProgramacionScreen} 
+                options={{ headerShown: true,
+                title: 'MIS PROGRAMACIONES',
+                headerStyle: {
                         backgroundColor: '#rgb(9, 65, 85)',  
-                        height: 60,},
+                        height: 70,},
                         headerTitleAlign: 'center',
                         headerTintColor: '#fff',
-                }}    
-            />
-            <Stack.Screen
-                name='ProgramacionNormal'
-                component={ProgramacionNormalScreen} 
-                options={{ headerShown: true,
-                title: 'PROGRAMACION NORMAL',
                 }} 
             /> 
             <Stack.Screen
@@ -91,6 +88,64 @@ const StackNavigation = () => {
                 options={{ headerShown: true,
                     title: 'VER MI PROGRAMACION',
                     }} 
+            />
+            <Stack.Screen
+                name='kardex'
+                component={KardexScreen} 
+                options={{ headerShown: true,
+                title: ' ',
+                headerStyle: {
+                        backgroundColor: '#rgb(9, 65, 85)',  
+                        height: 70,},
+                        headerTitleAlign: 'center',
+                        headerTintColor: '#fff',
+                }} 
+            /> 
+            <Stack.Screen
+                name='vernotas'
+                component={VerNotasScreen} 
+                options={{ headerShown: true,
+                title: ' ',
+                headerStyle: {
+                        backgroundColor: '#rgb(9, 65, 85)',  
+                        height: 70,},
+                        headerTitleAlign: 'center',
+                        headerTintColor: '#fff',
+                }} 
+            /> 
+            <Stack.Screen
+                name='notas'
+                component={MisNotasPeriodo} 
+                options={{ headerShown: true,
+                title: ' ',
+                headerStyle: {
+                        backgroundColor: '#rgb(9, 65, 85)',  
+                        height: 70,},
+                        headerTitleAlign: 'center',
+                        headerTintColor: '#fff',
+                }} 
+            />
+            <Stack.Screen 
+            name='imprimirkardexacademico'
+            component={Mostrar_KardexScreen}
+            />
+            
+            <Stack.Screen 
+            name='imprimirkardexpensum'
+            component={MostrarKardexPensumScreen}
+            />
+           
+            <Stack.Screen
+                name='tablanotas'
+                component={TablasNotas} 
+                options={{ headerShown: true,
+                title: ' ',
+                headerStyle: {
+                        backgroundColor: '#rgb(9, 65, 85)',  
+                        height: 70,},
+                        headerTitleAlign: 'center',
+                        headerTintColor: '#fff',
+                }} 
             />
         </Stack.Navigator>
     );

@@ -71,11 +71,6 @@ const ProfileStyle = StyleSheet.create({
       marginTop: 20,
 
     },
-    container2: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      padding: 10,
-    },
     buttonContainer: {
       flex: 1,
       marginHorizontal: 5,
@@ -93,20 +88,6 @@ const ProfileStyle = StyleSheet.create({
     tabView: {
       marginTop: 50,
     },
-    button: {
-      backgroundColor: '#rgb(0, 122, 255)',
-      paddingVertical: 12,
-      paddingHorizontal: 20,
-      borderRadius: 10,
-      alignItems: 'center',
-      justifyContent: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      elevation: 5,
-      marginVertical: 10,
-  },
   });
   
   export default ProfileStyle;
