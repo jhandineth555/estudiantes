@@ -26,23 +26,23 @@ export default function InfoAcademica() {
     <View style={styles.container}>
       <View style={styles.table}>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Facultad:</Text>
+          <Text style={styles.tableCell}>FACULTAD:</Text>
           <Text style={styles.tableCell}>{perfil.facultad}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Carrera:</Text>
+          <Text style={styles.tableCell}>CARRERA:</Text>
           <Text style={styles.tableCell}>{perfil.programa}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Dirección:</Text>
+          <Text style={styles.tableCell}>DIRECCION:</Text>
           <Text style={styles.tableCell}>{perfil.direccion_carrera}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Colegio de Egreso:</Text>
+          <Text style={styles.tableCell}>COLEGIO DE EGRESO:</Text>
           <Text style={styles.tableCell}>{perfil.colegio}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Fecha de Inscripción:</Text>
+          <Text style={styles.tableCell}>FECHA DE INSCRIPCION:</Text>
           <Text style={styles.tableCell}>{fechaInscripcion}</Text>
         </View>
       </View>

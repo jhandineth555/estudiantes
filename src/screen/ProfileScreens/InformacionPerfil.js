@@ -42,31 +42,31 @@ const InformacionPerfil = () => {
           <Text style={styles.tableCell}>{perfil.id_alumno}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Fecha de Nacimiento:</Text>
+          <Text style={styles.tableCell}>FECHA DE NACIMIENTO:</Text>
           <Text style={styles.tableCell}>{fechaNacimiento}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Dirección:</Text>
+          <Text style={styles.tableCell}>DIRECCION:</Text>
           <Text style={styles.tableCell}>{perfil.direccion}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Zona:</Text>
+          <Text style={styles.tableCell}>ZONA:</Text>
           <Text style={styles.tableCell}>{perfil.zona}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Teléfono Personal:</Text>
+          <Text style={styles.tableCell}>TELEFONO PERSONAL:</Text>
           <Text style={styles.tableCell}>{perfil.tel_per}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Email:</Text>
+          <Text style={styles.tableCell}>EMAIL:</Text>
           <Text style={styles.tableCell}>{perfil.email}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Tipo Sanguíneo:</Text>
+          <Text style={styles.tableCell}>TIPO SANGUINEO:</Text>
           <Text style={styles.tableCell}>{perfil.des_sanguineo}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Tel. Whatsapp:</Text>
+          <Text style={styles.tableCell}>TEL. WHATSAPP:</Text>
           <Text style={styles.tableCell}>{perfil.tel_whatsapp}</Text>
         </View>
       </View>

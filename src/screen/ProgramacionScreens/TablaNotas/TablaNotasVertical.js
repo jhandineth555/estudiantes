@@ -1,59 +1,62 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Card } from 'react-native-elements';
-
-const profileData = {
-  nombre: 'Juan Pérez',
-  carrera: 'Ingeniería de Sistemas',
-  facultad: 'Ciencias y Tecnología',
-  gestion: '2025',
-};
-
-const materias = [
-  {
-    tipo: 'NORMAL',
-    sigla: 'OPT015',
-    materia: 'ETICA PROFESIONAL',
-    grupo: 1,
-    '1er_parcial': 30,
-    '2do_parcial': 77,
-    '3er_parcial': 42,
-    prom_parciales: 24,
-    prom_practicas: 19,
-    prom_laboratorio: 0,
-    ex_final: 43,
-    prom_ex_final: 13,
-    nota_final: 56,
-    '2do_turno': 0,
-  },
-  {
-    tipo: 'NORMAL',
-    sigla: 'SIS123',
-    materia: 'BASE DE DATOS II',
-    grupo: 2,
-    '1er_parcial': 70,
-    '2do_parcial': 68,
-    '3er_parcial': 55,
-    prom_parciales: 64,
-    prom_practicas: 70,
-    prom_laboratorio: 60,
-    ex_final: 75,
-    prom_ex_final: 70,
-    nota_final: 78,
-    '2do_turno': 0,
-  },
-];
+import useFetch from '../../../hooks/useFetch';
 
 const TablasNotasVertical = () => {
+  const { perfil } = useFetch();
+
+  const nombre = perfil?.nombres || '';
+  const ap_paterno = perfil?.paterno || '';
+  const ap_materno = perfil?.materno || '';
+  const carrera = perfil?.programa || '';
+  const facultad = perfil?.facultad || '';
+  const gestion = perfil?.gestion || '';
+
+  const materias = [
+    {
+      tipo: 'NORMAL',
+      sigla: 'OPT015',
+      materia: 'ETICA PROFESIONAL',
+      grupo: 1,
+      '1er_parcial': 30,
+      '2do_parcial': 77,
+      '3er_parcial': 42,
+      prom_parciales: 24,
+      prom_practicas: 19,
+      prom_laboratorio: 0,
+      ex_final: 43,
+      prom_ex_final: 13,
+      nota_final: 56,
+      '2do_turno': 0,
+    },
+    {
+      tipo: 'NORMAL',
+      sigla: 'SIS123',
+      materia: 'BASE DE DATOS II',
+      grupo: 2,
+      '1er_parcial': 70,
+      '2do_parcial': 68,
+      '3er_parcial': 55,
+      prom_parciales: 64,
+      prom_practicas: 70,
+      prom_laboratorio: 60,
+      ex_final: 75,
+      prom_ex_final: 70,
+      nota_final: 78,
+      '2do_turno': 0,
+    },
+  ];
+
   return (
     <ScrollView style={styles.container}>
       {/* Perfil del estudiante */}
       <Card containerStyle={styles.perfilCard}>
         <Text style={styles.perfilTitle}>PERFIL DEL ESTUDIANTE</Text>
-        <Text style={styles.perfilItem}>NOMBRE: <Text style={styles.perfilValue}>{profileData.nombre}</Text></Text>
-        <Text style={styles.perfilItem}>CARRERA: <Text style={styles.perfilValue}>{profileData.carrera}</Text></Text>
-        <Text style={styles.perfilItem}>FACULTAD: <Text style={styles.perfilValue}>{profileData.facultad}</Text></Text>
-        <Text style={styles.perfilItem}>GESTIÓN: <Text style={styles.perfilValue}>{profileData.gestion}</Text></Text>
+        <Text style={styles.perfilItem}>NOMBRE: <Text style={styles.perfilValue}>{nombre} {ap_paterno} {ap_materno}</Text></Text>
+        <Text style={styles.perfilItem}>CARRERA: <Text style={styles.perfilValue}>{carrera}</Text></Text>
+        <Text style={styles.perfilItem}>FACULTAD: <Text style={styles.perfilValue}>{facultad}</Text></Text>
+        <Text style={styles.perfilItem}>GESTIÓN: <Text style={styles.perfilValue}>{gestion}</Text></Text>
       </Card>
 
       {/* Materias */}
@@ -79,7 +82,6 @@ const TablasNotasVertical = () => {
         </Card>
       ))}
 
-      {/* Espacio final */}
       <View style={{ height: 30 }} />
     </ScrollView>
   );
@@ -90,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#eef5f5',
     flex: 1,
     padding: 10,
-    paddingBottom: 40, // Espacio inferior
+    paddingBottom: 40,
   },
   perfilCard: {
     borderRadius: 6,
@@ -98,7 +100,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccecec',
     padding: 15,
     marginBottom: 15,
-    elevation: 2, // Sombra Android
+    elevation: 2,
   },
   perfilTitle: {
     fontSize: 18,
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0fafa',
     borderColor: '#ccecec',
     marginBottom: 20,
-    elevation: 2, // Sombra Android
+    elevation: 2,
   },
   row: {
     flexDirection: 'row',

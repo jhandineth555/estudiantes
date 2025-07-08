@@ -2,16 +2,15 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { Icon } from 'react-native-elements';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { handleLogout } from '../hooks/logout';
-import useFetch from '../hooks/useFetch';
+import { Avatar, Icon } from 'react-native-elements';
 import Modal from 'react-native-modal';
+import useFetch from '../hooks/useFetch';
+import { obtenerFoto } from '../services/Service';
+import { handleLogout } from '../hooks/logout';
 
 const CustomDrawerContent = (props) => {
   const { navigation } = props;
@@ -20,18 +19,29 @@ const CustomDrawerContent = (props) => {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
   const { perfil } = useFetch();
-  const ru = perfil ? perfil.id_alumno : '';
-  const nombre = perfil ? perfil.nombres : '';
-  const ap_paterno = perfil ? perfil.paterno : '';
-  const ap_materno = perfil ? perfil.materno : '';
+  const ru = perfil?.id_alumno || '';
+  const nombre = perfil?.nombres || '';
+  const ap_paterno = perfil?.paterno || '';
+  const ap_materno = perfil?.materno || '';
+  const sexo = perfil?.id_sexo?.toLowerCase();
 
   useEffect(() => {
     const fetchImage = async () => {
-      const uri = await AsyncStorage.getItem('profileImage');
-      setImageUri(uri);
+      if (perfil?.id_alumno) {
+        try {
+          const base64 = await obtenerFoto(perfil.id_alumno);
+          if (base64) {
+            const dataUri = `data:image/jpeg;base64,${base64}`;
+            setImageUri(dataUri);
+          }
+        } catch (error) {
+          console.error('❌ Error al cargar la imagen del backend:', error.message);
+        }
+      }
     };
+
     fetchImage();
-  }, []);
+  }, [perfil]);
 
   const toggleLogoutModal = () => {
     setLogoutModalVisible(!logoutModalVisible);
@@ -42,6 +52,12 @@ const CustomDrawerContent = (props) => {
     handleLogout(navigation);
   };
 
+  const avatarSource = imageUri
+    ? { uri: imageUri }
+    : sexo === 'f'
+    ? require('../asset/img/avatar_mujer.png')
+    : require('../asset/img/avatar.png');
+
   return (
     <DrawerContentScrollView
       {...props}
@@ -49,11 +65,12 @@ const CustomDrawerContent = (props) => {
     >
       <View style={styles.profileContainer}>
         <View style={styles.profileInfoRow}>
-          {imageUri ? (
-            <Image source={{ uri: `file://${imageUri}` }} style={styles.image} />
-          ) : (
-            <Image source={require('../asset/img/avatar.png')} style={styles.image} />
-          )}
+          <Avatar
+            size="xlarge"
+            rounded
+            source={avatarSource}
+            containerStyle={styles.image}
+          />
           <View style={styles.profileTextContainer}>
             <Text style={styles.username}>{nombre} {ap_paterno} {ap_materno}</Text>
             <Text style={styles.userInfo}>R.U.: {ru}</Text>
@@ -128,7 +145,6 @@ const CustomDrawerContent = (props) => {
         <Text style={styles.versionText}>Versión 1.0.0</Text>
       </View>
 
-      {/* Modal personalizado para cerrar sesión */}
       <Modal
         isVisible={logoutModalVisible}
         onBackdropPress={toggleLogoutModal}

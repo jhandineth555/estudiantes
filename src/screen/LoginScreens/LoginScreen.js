@@ -5,7 +5,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
 import LoginStyle from './LoginStyle';
-import { login } from '../../services/Service'; // tu función ya guarda los tokens
+import { login } from '../../services/Service';
 
 const loginSchema = Yup.object().shape({
   ru: Yup.string().min(5, 'Registro Universitario inválido').required('Campo obligatorio'),
@@ -22,7 +22,7 @@ const LoginScreen = () => {
 
       if (response && response.token) {
         Alert.alert('Bienvenido');
-        navigation.replace('Tab'); // evita volver atrás al login
+        navigation.replace('Tab');
       } else {
         Alert.alert('Error', 'Credenciales incorrectas');
       }

@@ -67,7 +67,6 @@ const TipoProgramacionScreen = () => {
       subItems: [
         { label: 'PROGRAMACION NORMAL', onPress: () => console.log('Programacionnormal') },
         { label: 'CURSOS DE VERANO', onPress: () => console.log('Cursosdeverano') },
-        { label: 'LABORATORIO', onPress: () => console.log('Programacionlaboratorio') },
         { label: 'MESA DE EXAMEN', onPress: () => console.log('ProgramacionMesaexamen') },
         { label: 'DESPROGRAMACION DE MATERIAS', onPress: () => console.log('ProgramacionMesaexamen') },
       ],

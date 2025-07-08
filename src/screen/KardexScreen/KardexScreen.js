@@ -14,9 +14,8 @@ import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 const numColumns = 2;
-const itemMargin = 16;
-const itemWidth = (width - (itemMargin * (numColumns + 1))) / numColumns;
-
+const spacing = 16;
+const itemWidth = (width - spacing * (numColumns + 1)) / numColumns;
 
 const GridItem = ({ iconName, label, onPress, iconColor, loading }) => (
   <TouchableOpacity
@@ -38,61 +37,56 @@ const GridItem = ({ iconName, label, onPress, iconColor, loading }) => (
   </TouchableOpacity>
 );
 
-const KardexScreen = () => {
+const KardexScreen = ({ route }) => {
   const navigation = useNavigation();
-  const [loadingDownloadKardex, setLoadingDownloadKardex] = useState(false);
-  const [loadingDownloadPensum, setLoadingDownloadPensum] = useState(false);
+  const ru = route?.params?.ru || '202201234';
 
+  const [loadingKardex, setLoadingKardex] = useState(false);
+  const [loadingPensum, setLoadingPensum] = useState(false);
 
-  const handleDownload = async (pdfId, nombreArchivo, setLoading) => {
-    setLoading(true);
+  const handleDownload = async (tipo, setLoading) => {
     try {
-      const result = await downloadPdf(pdfId, nombreArchivo);
+      setLoading(true);
+      const result = await downloadPdf(tipo, ru);
+      setLoading(false);
+
       if (result.success) {
-        Alert.alert(
-          'Éxito',
-          `PDF "${nombreArchivo}" descargado correctamente.`
-        );
-       
+        Alert.alert('✅ Descarga exitosa', `Se descargó el PDF de ${tipo.replace('_', ' ')}.`);
       } else {
-        Alert.alert('Error', 'No se pudo descargar el archivo.');
+        Alert.alert('❌ Error al descargar', 'Por favor, intenta nuevamente.');
       }
     } catch (error) {
-      Alert.alert('Error', 'Error inesperado al descargar el PDF.');
-    } finally {
       setLoading(false);
+      Alert.alert('⚠️ Error inesperado', 'Ocurrió un problema. Revisa tu conexión.');
     }
   };
 
-  // Datos de cada botón
   const data = [
     {
       iconName: 'printer',
-      label: 'Imprimir mi Kardex Académico',
-      target: 'imprimirkardexacademico',
-      iconColor: '#E53935',
-      loading: false,
+      label: 'Imprimir Kardex Académico',
+      iconColor: '#D32F2F',
+      onPress: () => navigation.navigate('imprimirkardexacademico', { ru }),
     },
     {
       iconName: 'download',
-      label: 'Descargar mi Kardex Académico (.PDF)',
-      iconColor: '#1E88E5',
-      loading: loadingDownloadKardex,
-      onPress: () => handleDownload(1, 'Kardex_Academico.pdf', setLoadingDownloadKardex),
+      label: 'Descargar Kardex Académico (.PDF)',
+      iconColor: '#1976D2',
+      loading: loadingKardex,
+      onPress: () => handleDownload('KARDEX_ACADEMICO', setLoadingKardex),
     },
     {
       iconName: 'printer',
-      label: 'Imprimir mi Kardex Pensum',
-      target: 'imprimirkardexpensum',
-      iconColor: '#E53935',
-      loading: false,
+      label: 'Imprimir Kardex Pensum',
+      iconColor: '#D32F2F',
+      onPress: () => navigation.navigate('imprimirkardexpensum', { ru }),
     },
     {
       iconName: 'download',
-      label: 'Descargar mi Kardex Pensum (.PDF)',
-      iconColor: '#1E88E5',
-      loading: loadingDownloadPensum,
-      onPress: () => handleDownload(2, 'Kardex_Pensum.pdf', setLoadingDownloadPensum),
+      label: 'Descargar Kardex Pensum (.PDF)',
+      iconColor: '#1976D2',
+      loading: loadingPensum,
+      onPress: () => handleDownload('KARDEX_PENSUM', setLoadingPensum),
     },
   ];
 
@@ -107,11 +101,7 @@ const KardexScreen = () => {
             label={item.label}
             iconColor={item.iconColor}
             loading={item.loading}
-            onPress={
-              item.onPress
-                ? item.onPress
-                : () => navigation.navigate(item.target)
-            }
+            onPress={item.onPress}
           />
         ))}
       </View>
@@ -119,18 +109,17 @@ const KardexScreen = () => {
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: '#FAFAFA',
     paddingTop: 40,
-    paddingHorizontal: itemMargin,
+    paddingHorizontal: spacing,
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#2C3E50',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -141,12 +130,12 @@ const styles = StyleSheet.create({
   },
   item: {
     height: 160,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 15,
+    backgroundColor: '#FFF',
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: itemMargin,
-    paddingHorizontal: 8,
+    marginBottom: spacing,
+    paddingHorizontal: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 4 },
@@ -158,7 +147,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#444',
+    color: '#333',
     textAlign: 'center',
   },
 });

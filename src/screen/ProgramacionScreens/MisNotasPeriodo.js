@@ -26,13 +26,12 @@ const MisNotasPeriodo = () => {
   const tablas = datosPorPeriodo[periodo] || [];
 
   useEffect(() => {
-    // Simula una llamada a una API
     const cargarOpciones = async () => {
       const data = [
         { label: 'Primer Trimestre', value: '1' },
         { label: 'Segundo Trimestre', value: '2' },
         { label: 'Tercer Trimestre', value: '3' },
-        { label: 'Tercers Trimestre', value: '4' }
+        { label: 'Cuarto Trimestre', value: '4' }, // corregido
       ];
       setOpciones(data);
     };
@@ -64,20 +63,24 @@ const MisNotasPeriodo = () => {
         data={opciones}
         labelField="label"
         valueField="value"
-        placeholder="Seleccione Gestión y periodo de su Programación"
+        placeholder="Seleccione gestión y período"
         value={periodo}
         onChange={item => setPeriodo(item.value)}
       />
 
-      {tablas.length > 0 && (
-        <>
-          {tablas.map((item) => (
-            <Card key={item.id}>
-              <Text style={{ fontWeight: 'bold' }}>{item.materia}</Text>
-              <Text>Nota: {item.nota}</Text>
-            </Card>
-          ))}
-        </>
+      {tablas.length > 0 ? (
+        tablas.map((item) => (
+          <Card key={item.id}>
+            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.materia}</Text>
+            <Text style={{ fontSize: 14 }}>Nota: {item.nota}</Text>
+          </Card>
+        ))
+      ) : periodo && (
+        <Card>
+          <Text style={{ color: '#cc0000', textAlign: 'center' }}>
+            No hay notas disponibles para este período.
+          </Text>
+        </Card>
       )}
     </ScrollView>
   );

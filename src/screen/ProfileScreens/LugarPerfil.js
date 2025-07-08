@@ -17,19 +17,19 @@ const LugarPerfil = () => {
     <View style={styles.container}>
       <View style={styles.table}>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Pais: </Text>
+          <Text style={styles.tableCell}>PAIS: </Text>
           <Text style={styles.tableCell}>{perfil.pais}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Departamento:</Text>
+          <Text style={styles.tableCell}>DEPARTAMENTO:</Text>
           <Text style={styles.tableCell}>{perfil.departamento}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Provincia:</Text>
+          <Text style={styles.tableCell}>PROVINCIA:</Text>
           <Text style={styles.tableCell}>{perfil.provincia}</Text>
         </View>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>Localidad:</Text>
+          <Text style={styles.tableCell}>LOCALIDAD:</Text>
           <Text style={styles.tableCell}>{perfil.localidad}</Text>
         </View>
       </View>

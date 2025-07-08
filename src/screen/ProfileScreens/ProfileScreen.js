@@ -5,9 +5,9 @@ import {
   Animated,
   RefreshControl,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { Avatar } from 'react-native-elements';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import InformacionPerfil from './InformacionPerfil';
 import InfoAcademica from './InfoAcademica';
@@ -15,6 +15,7 @@ import LugarPerfil from './LugarPerfil';
 import ProfileStyle from './ProfileStyle';
 import NavigationStyles from '../../navigation/NavigationStyles';
 import useFetch from '../../hooks/useFetch';
+import { getFotoPerfil } from '../../services/Service'; // ✅ importar del service
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -25,12 +26,23 @@ const ProfileScreen = () => {
 
   const { perfil, refreshPerfil } = useFetch();
 
+  // ✅ Función para obtener imagen del backend
+  const loadImage = async () => {
+    try {
+      const base64Image = await getFotoPerfil();
+      if (base64Image) {
+        setImageUri(`data:image/jpeg;base64,${base64Image}`);
+      } else {
+        setImageUri(null); // Si no hay imagen
+      }
+    } catch (error) {
+      console.error('Error obteniendo imagen de perfil:', error);
+      setImageUri(null);
+    }
+  };
+
   useEffect(() => {
-    const fetchImage = async () => {
-      const uri = await AsyncStorage.getItem('profileImage');
-      if (uri) setImageUri(uri);
-    };
-    fetchImage();
+    loadImage();
   }, []);
 
   useFocusEffect(
@@ -52,22 +64,29 @@ const ProfileScreen = () => {
     return () => scrollY.removeListener(listener);
   }, [navigation, scrollY]);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
+    if (!refreshPerfil) return;
+
     setRefreshing(true);
-    Promise.all([refreshPerfil?.()])
-      .finally(() => setRefreshing(false));
+    try {
+      await refreshPerfil();  // 🔄 Datos del perfil
+      await loadImage();      // 🔄 Imagen del perfil desde backend
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo actualizar la información');
+    } finally {
+      setRefreshing(false);
+    }
   }, [refreshPerfil]);
 
   const ruE = perfil?.id_alumno || '';
   const ca = perfil?.programa || '';
   const sexo = perfil?.id_sexo?.toLowerCase();
 
-  // Selecciona la imagen del avatar según sexo o imagen guardada
   const avatarSource = imageUri
-    ? { uri: `file://${imageUri}` }
+    ? { uri: imageUri }
     : sexo === 'f'
-      ? require('../../asset/img/avatar_mujer.png')  // Avatar femenino
-      : require('../../asset/img/avatar.png');       // Avatar masculino por defecto
+    ? require('../../asset/img/avatar_mujer.png')
+    : require('../../asset/img/avatar.png');
 
   return (
     <View style={styles.container}>
@@ -81,8 +100,8 @@ const ProfileScreen = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        contentContainerStyle={{ paddingBottom: 40 }}
       >
-        {/* Encabezado */}
         <View style={styles.header}>
           <Text style={ProfileStyle.centeredText}>CARRERA: {ca}</Text>
 
@@ -97,7 +116,6 @@ const ProfileScreen = () => {
           <Text style={styles.title}>INFORMACIÓN</Text>
         </View>
 
-        {/* Secciones */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>INFORMACIÓN DEL ESTUDIANTE</Text>
           <InformacionPerfil />
@@ -112,8 +130,6 @@ const ProfileScreen = () => {
           <Text style={styles.sectionTitle}>INFORMACIÓN DE LOCALIDAD</Text>
           <LugarPerfil />
         </View>
-
-        <View style={{ height: 40 }} />
       </Animated.ScrollView>
     </View>
   );
