@@ -50,7 +50,7 @@ const ListItem = ({ label, onPress, subItems }) => {
               style={styles.subItem}
               onPress={subItem.onPress}
             >
-              <Text style={styles.subItemLabel}>• {subItem.label}</Text>
+              <Text style={styles.subItemLabel}> {subItem.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -65,11 +65,14 @@ const TipoProgramacionScreen = () => {
     {
       label: 'PROGRAMAR MATERIAS',
       subItems: [
-        { label: 'PROGRAMACION NORMAL', onPress: () => console.log('Programacionnormal') },
+        {/*{ label: 'PROGRAMACION NORMAL', onPress: () => console.log('Programacionnormal') },
         { label: 'CURSOS DE VERANO', onPress: () => console.log('Cursosdeverano') },
         { label: 'MESA DE EXAMEN', onPress: () => console.log('ProgramacionMesaexamen') },
         { label: 'DESPROGRAMACION DE MATERIAS', onPress: () => console.log('ProgramacionMesaexamen') },
-      ],
+         */
+     },
+        { label: 'NO EXISTEN MATERIAS PARA PROGRAMAR', onPress: () => navigation.navigate('ProgramacionNormal') },
+    ],
     },
     {
       label: 'VER MIS NOTAS',

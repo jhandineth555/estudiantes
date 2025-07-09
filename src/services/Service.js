@@ -4,19 +4,28 @@ import RNFetchBlob from 'react-native-blob-util';
 
 const API_URL = "https://api3000.uatf.edu.bo";
 
-// Axios instance para usar con tokens y renovación automática
+// Crear instancia axios con baseURL
 const api = axios.create({ baseURL: API_URL });
 
-// Interceptor para agregar Authorization header automáticamente
+// Interceptor para agregar token y evitar caché en GET
 api.interceptors.request.use(async (config) => {
   const token = await EncryptedStorage.getItem('authToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  if (config.method === 'get') {
+    // Evitar cache
+    config.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+    config.headers['Pragma'] = 'no-cache';
+    config.headers['Expires'] = '0';
+
+    // Agregar timestamp para evitar cache en URL
+    config.url += (config.url.includes('?') ? '&' : '?') + 't=' + Date.now();
+  }
   return config;
 });
 
-// Interceptor para manejar errores 401 y renovar token automáticamente
+// Interceptor para renovar token cuando expire
 api.interceptors.response.use(
   response => response,
   async (error) => {
@@ -47,7 +56,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         await EncryptedStorage.removeItem('authToken');
         await EncryptedStorage.removeItem('refreshToken');
-        // Puedes agregar aquí algún evento para logout global si usas context
+        // Aquí puedes disparar evento global de logout si tienes context o redux
         return Promise.reject(new Error('Sesión expirada. Por favor, inicia sesión nuevamente.'));
       }
     }
@@ -73,7 +82,7 @@ export const login = async (ru, password) => {
   }
 };
 
-// 2. Renovar token (usa el interceptor, no necesitas llamar esta función directamente a menos que quieras)
+// 2. Renovar token (llamado interno o manual si quieres)
 export const refreshAccessToken = async () => {
   const refreshToken = await EncryptedStorage.getItem('refreshToken');
   if (!refreshToken) throw new Error('No hay refresh token');
@@ -102,15 +111,21 @@ export const fetchWithAuthRetry = async (url, options = {}) => {
   return response.data;
 };
 
-// 4. Fetch para blobs con renovación automática
+// 4. Fetch para blobs con renovación automática y sin cache
 export const fetchBlobWithAuthRetry = async (url) => {
   let token = await EncryptedStorage.getItem('authToken');
-  let response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+  let response = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
 
   if (response.status === 401) {
     try {
       const newToken = await refreshAccessToken();
-      response = await fetch(url, { headers: { Authorization: `Bearer ${newToken}` } });
+      response = await fetch(url, {
+        headers: { Authorization: `Bearer ${newToken}` },
+        cache: 'no-store',
+      });
     } catch (err) {
       await EncryptedStorage.removeItem('authToken');
       await EncryptedStorage.removeItem('refreshToken');
@@ -134,9 +149,14 @@ export const update_data = async ({ num_wasap, email }) => {
   });
 };
 
-// 6. Descarga de PDF reutilizable
+// 6. Descarga de PDF reutilizable (elimina archivo anterior para evitar cache)
 const downloadPDF = async (url, path, title, description) => {
   try {
+    const fs = RNFetchBlob.fs;
+    if (await fs.exists(path)) {
+      await fs.unlink(path);  // Eliminar archivo viejo para no cachear
+    }
+
     const response = await fetchBlobWithAuthRetry(url);
     const pdfUrl = await response.json();
 
@@ -177,11 +197,13 @@ export const fetchTempPdfCarnetUniversitario = async (ru) => {
   const path = `${fs.dirs.DownloadDir}/carnet_universitario_${ru}.pdf`;
   return downloadPDF(`${API_URL}/ImprimirSolicitudCarnetUniversitario/${ru}`, path, `carnet_universitario_${ru}.pdf`, 'Descargando Carnet Universitario');
 };
+
 export const fetchTempPdfMatricula = async (ru) => {
   const { fs } = RNFetchBlob;
   const path = `${fs.dirs.DownloadDir}/matricula_${ru}.pdf`;
   return downloadPDF(`${API_URL}/ImprimirMatricula/${ru}`, path, `matricula_${ru}.pdf`, 'Descargando Matrícula');
 };
+
 export const downloadPdf = async (tipo, ru) => {
   if (!ru || !tipo) return { success: false, error: 'Faltan datos' };
 
@@ -190,7 +212,6 @@ export const downloadPdf = async (tipo, ru) => {
     case 'KARDEX_PENSUM': return fetchTempPdfKardexPensum(ru);
     case 'CARNET_UNIVERSITARIO': return fetchTempPdfCarnetUniversitario(ru);
     case 'MATRICULA': return fetchTempPdfMatricula(ru);
-    //case 'MATRICULA': return fetchTempPdfKardexAcademico(ru);
     default: return { success: false, error: 'Tipo no válido' };
   }
 };
@@ -205,10 +226,15 @@ export const getFotoPerfil = async () => {
     throw error;
   }
 };
-// 8. Obtener materias
+
+// 8. Obtener periodos y materias
 export const getPeriodos = async (ru) => {
   try {
-    const response = await axios.get(`${API_URL}/${ru}`);
+    const response = await api.get(`${ru}`, {
+      headers: {
+        'Cache-Control': 'no-cache',
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Error al obtener los periodos:', error);
@@ -216,10 +242,13 @@ export const getPeriodos = async (ru) => {
   }
 };
 
-// Obtener las materias para un periodo específico (ej: '2024-1')
 export const getMateriasPorPeriodo = async (periodo) => {
   try {
-    const response = await axios.get(`${API_URL}/materias/${periodo}`);
+    const response = await api.get(`materias/${periodo}`, {
+      headers: {
+        'Cache-Control': 'no-cache',
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Error al obtener materias del periodo:', error);
@@ -227,7 +256,7 @@ export const getMateriasPorPeriodo = async (periodo) => {
   }
 };
 
-// 9. Subir foto al backend
+// 9. Subir foto perfil
 export const uploadFotoPerfil = async (base64Image) => {
   try {
     const response = await fetchWithAuthRetry('/foto', {
@@ -239,29 +268,6 @@ export const uploadFotoPerfil = async (base64Image) => {
     return response;
   } catch (error) {
     console.error('Error al subir la foto:', error.message);
-    throw error;
-  }
-};
-//obtener foto por RU
-export const obtenerFoto = async (ru) => {
-  try {
-    const response = await axios.get(`${API_URL}/mostrarfoto/${ru}`);
-    return response.data.r_foto;
-  } catch (error) {
-    console.error('❌ Error al obtener la foto:', error.message);
-    return null;
-  }
-};
-
-// ✅ Subir foto en base64
-export const subirFoto = async (ru, base64Image) => {
-  try {
-    const response = await axios.post(`${API_URL}/subirfoto/${ru}`, {
-      r_foto_base64: base64Image,
-    });
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error al subir la foto:', error.message);
     throw error;
   }
 };

@@ -8,8 +8,8 @@ import {
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Avatar, Icon } from 'react-native-elements';
 import Modal from 'react-native-modal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import useFetch from '../hooks/useFetch';
-import { obtenerFoto } from '../services/Service';
 import { handleLogout } from '../hooks/logout';
 
 const CustomDrawerContent = (props) => {
@@ -25,23 +25,21 @@ const CustomDrawerContent = (props) => {
   const ap_materno = perfil?.materno || '';
   const sexo = perfil?.id_sexo?.toLowerCase();
 
+  // Cargar imagen desde AsyncStorage en lugar del backend
   useEffect(() => {
-    const fetchImage = async () => {
-      if (perfil?.id_alumno) {
-        try {
-          const base64 = await obtenerFoto(perfil.id_alumno);
-          if (base64) {
-            const dataUri = `data:image/jpeg;base64,${base64}`;
-            setImageUri(dataUri);
-          }
-        } catch (error) {
-          console.error('❌ Error al cargar la imagen del backend:', error.message);
+    const fetchImageFromStorage = async () => {
+      try {
+        const dataUri = await AsyncStorage.getItem('profileImage');
+        if (dataUri) {
+          setImageUri(dataUri);
         }
+      } catch (error) {
+        console.error('❌ Error al obtener la imagen local:', error.message);
       }
     };
 
-    fetchImage();
-  }, [perfil]);
+    fetchImageFromStorage();
+  }, []);
 
   const toggleLogoutModal = () => {
     setLogoutModalVisible(!logoutModalVisible);
@@ -270,7 +268,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
   },
-
   // Modal styles
   modalContainer: {
     backgroundColor: 'white',

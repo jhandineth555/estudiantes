@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { Card, Input, Button, Icon } from 'react-native-elements';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native';
+import Modal from 'react-native-modal';
+
 import LoginStyle from './LoginStyle';
 import { login } from '../../services/Service';
 
@@ -14,6 +16,7 @@ const loginSchema = Yup.object().shape({
 
 const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isWelcomeVisible, setIsWelcomeVisible] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = async (values) => {
@@ -21,8 +24,11 @@ const LoginScreen = () => {
       const response = await login(values.ru, values.password);
 
       if (response && response.token) {
-        Alert.alert('Bienvenido');
-        navigation.replace('Tab');
+        setIsWelcomeVisible(true);
+        setTimeout(() => {
+          setIsWelcomeVisible(false);
+          navigation.replace('Tab');
+        }, 2000);
       } else {
         Alert.alert('Error', 'Credenciales incorrectas');
       }
@@ -85,8 +91,36 @@ const LoginScreen = () => {
           )}
         </Formik>
       </View>
+
+      {/* Modal estilizado */}
+      <Modal isVisible={isWelcomeVisible} animationIn="zoomIn" animationOut="zoomOut">
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>¡Bienvenido!</Text>
+          <Text style={styles.modalText}>Has iniciado sesión correctamente</Text>
+        </View>
+      </Modal>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#517fa4',
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#333',
+  },
+});
 
 export default LoginScreen;

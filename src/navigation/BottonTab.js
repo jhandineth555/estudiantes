@@ -54,7 +54,7 @@ const BottonTab = () => {
               <Icon name={iconName} size={iconSize} color={iconColor} />
               {route.name === "Notification" && (
                 <Badge
-                  value="4"
+                  value="0"
                   status="error"
                   badgeStyle={styles.badgeStyle}
                   containerStyle={styles.badgeContainer}

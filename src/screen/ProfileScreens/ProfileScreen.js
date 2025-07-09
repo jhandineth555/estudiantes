@@ -9,13 +9,13 @@ import {
 } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import InformacionPerfil from './InformacionPerfil';
 import InfoAcademica from './InfoAcademica';
 import LugarPerfil from './LugarPerfil';
 import ProfileStyle from './ProfileStyle';
 import NavigationStyles from '../../navigation/NavigationStyles';
 import useFetch from '../../hooks/useFetch';
-import { getFotoPerfil } from '../../services/Service'; // ✅ importar del service
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -26,17 +26,17 @@ const ProfileScreen = () => {
 
   const { perfil, refreshPerfil } = useFetch();
 
-  // ✅ Función para obtener imagen del backend
+  // ✅ Obtener imagen desde AsyncStorage
   const loadImage = async () => {
     try {
-      const base64Image = await getFotoPerfil();
-      if (base64Image) {
-        setImageUri(`data:image/jpeg;base64,${base64Image}`);
+      const dataUri = await AsyncStorage.getItem('profileImage');
+      if (dataUri) {
+        setImageUri(dataUri);
       } else {
-        setImageUri(null); // Si no hay imagen
+        setImageUri(null);
       }
     } catch (error) {
-      console.error('Error obteniendo imagen de perfil:', error);
+      console.error('Error cargando imagen desde AsyncStorage:', error);
       setImageUri(null);
     }
   };
@@ -66,11 +66,10 @@ const ProfileScreen = () => {
 
   const onRefresh = useCallback(async () => {
     if (!refreshPerfil) return;
-
     setRefreshing(true);
     try {
-      await refreshPerfil();  // 🔄 Datos del perfil
-      await loadImage();      // 🔄 Imagen del perfil desde backend
+      await refreshPerfil();  // 🔄 refresca datos del perfil
+      await loadImage();      // 🔄 refresca imagen desde local
     } catch (error) {
       Alert.alert('Error', 'No se pudo actualizar la información');
     } finally {
